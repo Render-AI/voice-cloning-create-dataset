@@ -228,7 +228,7 @@ class Predictor(BasePredictor):
                 pass
 
         # Delete old output
-        test_zip = "dataset_{AUDIO_NAME}.zip"
+        test_zip = "{AUDIO_NAME}`"
         try:
             os.remove(test_zip)
         except FileNotFoundError:
@@ -286,7 +286,7 @@ class Predictor(BasePredictor):
         audio_folder_path = base_dataset_path / AUDIO_NAME
 
         # Output ZIP file path
-        output_zip_path = f"dataset_{AUDIO_NAME}.zip"
+        output_zip_path = f"{AUDIO_NAME}.zip"
 
         # Make sure the audio folder exists
         if not audio_folder_path.exists():
