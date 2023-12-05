@@ -201,9 +201,12 @@ class Predictor(BasePredictor):
 
     def predict(
         self,
+        audio_file: Path = Input(
+            description="Reference speech to copy style from", default=None),
         youtube_url: str = Input(
             description="URL to YouTube video you'd like to create your RVC v2 dataset from",
         ),
+
         audio_name: str = Input(
             default="rvc_v2_voices",
             description="Name of the dataset. The output will be a zip file containing a folder named `dataset/<audio_name>/`. This folder will include multiple `.mp3` files named as `split_<i>.mp3`. Each `split_<i>.mp3` file is a short audio clip extracted from the provided YouTube video, where voice has been isolated from the background noise.",
@@ -234,23 +237,27 @@ class Predictor(BasePredictor):
         except FileNotFoundError:
             pass
 
-        # Download Youtube WAV
-        ydl_opts = {
-            "format": "bestaudio/best",
-            #    'outtmpl': 'output.%(ext)s',
-            "postprocessors": [
-                {
-                    "key": "FFmpegExtractAudio",
-                    "preferredcodec": "wav",
-                }
-            ],
-            "outtmpl": f"youtubeaudio/{AUDIO_NAME}",  # this is where you can edit how you'd like the filenames to be formatted
-        }
-        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-            ydl.download([url])
+        if audio_file is None:
+            # Download Youtube WAV
+            ydl_opts = {
+                "format": "bestaudio/best",
+                #    'outtmpl': 'output.%(ext)s',
+                "postprocessors": [
+                    {
+                        "key": "FFmpegExtractAudio",
+                        "preferredcodec": "wav",
+                    }
+                ],
+                "outtmpl": f"youtubeaudio/{AUDIO_NAME}",  # this is where you can edit how you'd like the filenames to be formatted
+            }
+            with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+                ydl.download([url])
+            AUDIO_INPUT = f"youtubeaudio/{AUDIO_NAME}.wav"                
+        
+        if audio_file is not None:
+            AUDIO_INPUT = audio_file
 
-        # Separate Vocal and Instrument/Noise using Demucs
-        AUDIO_INPUT = f"youtubeaudio/{AUDIO_NAME}.wav"
+        # Separate Vocal and Instrument/Noise using Demucs        
         command = f"demucs --two-stems=vocals {AUDIO_INPUT}"
         print(f"Running: {command}")
         process = subprocess.Popen(command.split(), stdout=subprocess.PIPE)
