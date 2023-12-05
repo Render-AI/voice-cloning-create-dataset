@@ -204,7 +204,7 @@ class Predictor(BasePredictor):
         audio_file: Path = Input(
             description="Reference speech to copy style from", default=None),
         youtube_url: str = Input(
-            description="URL to YouTube video you'd like to create your RVC v2 dataset from",
+            description="URL to YouTube video you'd like to create your RVC v2 dataset from",default=None
         ),
 
         audio_name: str = Input(
