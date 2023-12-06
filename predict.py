@@ -202,7 +202,7 @@ class Predictor(BasePredictor):
     def predict(
         self,
         audio_file: Path = Input(
-            description="Reference speech to copy style from", default=None),
+            description="Reference speech to copy style from"),
         youtube_url: str = Input(
             description="URL to YouTube video you'd like to create your RVC v2 dataset from",default=None
         ),
